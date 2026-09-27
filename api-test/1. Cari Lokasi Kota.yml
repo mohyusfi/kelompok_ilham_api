@@ -1,0 +1,64 @@
+info:
+  name: 1. Cari Lokasi Kota
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{geocodingBaseUrl}}/search?name={{cityName}}&count=1&language=id&countryCode=ID"
+  params:
+    - name: name
+      value: "{{cityName}}"
+      type: query
+    - name: count
+      value: "1"
+      type: query
+    - name: language
+      value: "id"
+      type: query
+    - name: countryCode
+      value: "ID"
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.results.length
+      operator: gt
+      value: "0"
+  scripts:
+    - type: tests
+      code: |
+        test("Status code is 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+        test("Hasil pencarian lokasi ditemukan", function() {
+          const body = res.getBody();
+          expect(body).to.have.property('results');
+          expect(body.results.length).to.be.above(0);
+
+          const hasil = body.results[0];
+          expect(hasil).to.have.property('name');
+          expect(hasil).to.have.property('latitude');
+          expect(hasil).to.have.property('longitude');
+
+          bru.setEnvVar('latitude', hasil.latitude.toString());
+          bru.setEnvVar('longitude', hasil.longitude.toString());
+          bru.setEnvVar('timezone', hasil.timezone || 'Asia/Makassar');
+          bru.setEnvVar('locationName', hasil.name);
+          bru.setEnvVar('region', hasil.admin1 || '');
+
+          console.log("=== HASIL PENCARIAN LOKASI (GEOCODING) ===");
+          console.log(`Lokasi     : ${hasil.name}, ${hasil.admin1}`);
+          console.log(`Koordinat  : ${hasil.latitude}, ${hasil.longitude}`);
+          console.log(`Zona waktu : ${hasil.timezone}`);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

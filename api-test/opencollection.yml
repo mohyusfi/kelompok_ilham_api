@@ -1,0 +1,14 @@
+opencollection: 1.0.0
+
+info:
+  name: Cuaca Kota API Test
+config:
+  proxy:
+    inherit: true
+bundled: false
+extensions:
+  bruno:
+    defaultEnvironment: OpenMeteo
+    ignore:
+      - node_modules
+      - .git

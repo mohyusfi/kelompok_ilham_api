@@ -1,0 +1,60 @@
+info:
+  name: 2. Ambil Cuaca Kota
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{weatherBaseUrl}}/forecast?latitude={{latitude}}&longitude={{longitude}}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone={{timezone}}"
+  params:
+    - name: latitude
+      value: "{{latitude}}"
+      type: query
+    - name: longitude
+      value: "{{longitude}}"
+      type: query
+    - name: current
+      value: "temperature_2m,relative_humidity_2m,wind_speed_10m"
+      type: query
+    - name: timezone
+      value: "{{timezone}}"
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.current.temperature_2m
+      operator: isDefined
+  scripts:
+    - type: tests
+      code: |
+        test("Status code is 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+        test("Data cuaca saat ini (current) valid", function() {
+          const body = res.getBody();
+          expect(body).to.have.property('current');
+          expect(body.current).to.have.property('temperature_2m');
+          expect(body.current).to.have.property('relative_humidity_2m');
+          expect(body.current).to.have.property('wind_speed_10m');
+          expect(body.current).to.have.property('time');
+
+          const cuaca = body.current;
+          console.log("=== OUTPUT CUACA (BRUNO) ===");
+          console.log(`Lokasi     : ${bru.getEnvVar('locationName')}, ${bru.getEnvVar('region')}`);
+          console.log(`Koordinat  : ${bru.getEnvVar('latitude')}, ${bru.getEnvVar('longitude')}`);
+          console.log(`Zona waktu : ${bru.getEnvVar('timezone')}`);
+          console.log(`Waktu      : ${cuaca.time}`);
+          console.log(`Suhu       : ${cuaca.temperature_2m} °C`);
+          console.log(`Kelembapan : ${cuaca.relative_humidity_2m} %`);
+          console.log(`Angin      : ${cuaca.wind_speed_10m} km/h`);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

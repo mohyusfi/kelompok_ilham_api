@@ -1,0 +1,34 @@
+name: OpenMeteo
+variables:
+  - name: geocodingBaseUrl
+    value: https://geocoding-api.open-meteo.com/v1
+    enabled: true
+    secret: false
+  - name: weatherBaseUrl
+    value: https://api.open-meteo.com/v1
+    enabled: true
+    secret: false
+  - name: cityName
+    value: Palu
+    enabled: true
+    secret: false
+  - name: latitude
+    value: "-0.90833"
+    enabled: true
+    secret: false
+  - name: longitude
+    value: "119.87083"
+    enabled: true
+    secret: false
+  - name: timezone
+    value: Asia/Makassar
+    enabled: true
+    secret: false
+  - name: locationName
+    value: Kota Palu
+    enabled: true
+    secret: false
+  - name: region
+    value: Sulawesi Tengah
+    enabled: true
+    secret: false
